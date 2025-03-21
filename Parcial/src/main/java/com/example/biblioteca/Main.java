@@ -1,11 +1,13 @@
 package com.example.biblioteca;
 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
-        ServicioBiblioteca servicio = new ServicioBiblioteca();
+        AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        ServicioBiblioteca servicio = context.getBean(ServicioBiblioteca.class);
 
         servicio.agregarRecurso(new Libro("El Principito", LocalDateTime.now(), true, LocalDate.of(1943, 4, 6), "Editorial A"));
         servicio.agregarRecurso(new Periodico("El País", LocalDateTime.now(), true, LocalDate.of(2023, 10, 1), "Editorial B"));
@@ -23,5 +25,7 @@ public class Main {
 
         System.out.println("\nRecursos en la biblioteca después de eliminar:");
         servicio.obtenerTodos().forEach(System.out::println);
+
+        context.close();
     }
 }
