@@ -1,35 +1,58 @@
 package com.example.biblioteca;
 
-import java.util.ArrayList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import java.util.Collection;
-import java.util.List;
+import java.util.ArrayList;
 
+@Service
 public class ServicioBiblioteca {
-    private List<Recurso> recursos;
+    private final LibroRepository libroRepository;
+    private final PeriodicoRepository periodicoRepository;
+    private final ComputadorRepository computadorRepository;
 
-    public ServicioBiblioteca() {
-        this.recursos = new ArrayList<>();
+    @Autowired
+    public ServicioBiblioteca(LibroRepository libroRepository,
+                             PeriodicoRepository periodicoRepository,
+                             ComputadorRepository computadorRepository) {
+        this.libroRepository = libroRepository;
+        this.periodicoRepository = periodicoRepository;
+        this.computadorRepository = computadorRepository;
     }
 
     public void agregarRecurso(Recurso recurso) {
-        recursos.add(recurso);
+        if (recurso instanceof Libro) {
+            libroRepository.agregar((Libro) recurso);
+        } else if (recurso instanceof Periodico) {
+            periodicoRepository.agregar((Periodico) recurso);
+        } else if (recurso instanceof Computador) {
+            computadorRepository.agregar((Computador) recurso);
+        }
     }
 
     public void eliminarRecurso(Recurso recurso) {
-        recursos.remove(recurso);
+        if (recurso instanceof Libro) {
+            libroRepository.eliminar((Libro) recurso);
+        } else if (recurso instanceof Periodico) {
+            periodicoRepository.eliminar((Periodico) recurso);
+        } else if (recurso instanceof Computador) {
+            computadorRepository.eliminar((Computador) recurso);
+        }
     }
 
     public Collection<Recurso> buscarRecursos(String criterio) {
-        List<Recurso> resultados = new ArrayList<>();
-        for (Recurso recurso : recursos) {
-            if (recurso.coincideConCriterio(criterio)) {
-                resultados.add(recurso);
-            }
-        }
+        Collection<Recurso> resultados = new ArrayList<>();
+        resultados.addAll(libroRepository.buscar(criterio));
+        resultados.addAll(periodicoRepository.buscar(criterio));
+        resultados.addAll(computadorRepository.buscar(criterio));
         return resultados;
     }
 
     public Collection<Recurso> obtenerTodos() {
-        return new ArrayList<>(recursos);
+        Collection<Recurso> recursos = new ArrayList<>();
+        recursos.addAll(libroRepository.obtenerTodos());
+        recursos.addAll(periodicoRepository.obtenerTodos());
+        recursos.addAll(computadorRepository.obtenerTodos());
+        return recursos;
     }
 }
